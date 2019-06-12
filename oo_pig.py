@@ -1,3 +1,4 @@
+import random
 SCORE_TO_WIN = 100
 
 class PlayGame:
@@ -69,10 +70,22 @@ class Player:
                 print("Only names up to 10 characters are supported")
 
     def take_turn(self):
-        self.score += int(input("Put in a score: "))
+        # self.score += int(input("Put in a score: "))
+        the_die = Die()
+        roll = the_die.roll()
+        print(f"You rolled a {roll}")
+        self.score += roll
         if self.score >= SCORE_TO_WIN:
             print(f"{self.name} wins!")
             self.winner = True
         return self.winner
+
+class Die:
+    """makes 1 die and can roll it"""
+    def __init__(self, sides=6):
+        self.sides = sides
+
+    def roll(self):
+        return random.randint(1, self.sides+1)
 
 PlayGame()
