@@ -5,6 +5,7 @@ SCORE_TO_WIN = 100
 class PlayGame:
     """Plays the dice game Pig with two players"""
     def __init__(self):
+        os.system("clear")
         self.player_one = Player()
         self.player_two = self.get_opponent()
         self.scoreboard = Scoreboard(self.player_one, self.player_two)
@@ -50,6 +51,7 @@ class Scoreboard:
         self.best_of = best_of
     
     def display(self):
+        os.system("clear")
         print(f"""
             {self.player_one.name}: {self.player_one.score}       {self.player_two.name}: {self.player_two.score}
         """)
@@ -79,6 +81,7 @@ class Player:
             print(f"You rolled a {roll}")
             if roll == 1:
                 print("BUSTED!")
+                input("Press Enter to Continue")
                 turn_over = True
                 turn_score = 0
             else:
