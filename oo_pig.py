@@ -27,11 +27,12 @@ class PlayGame:
         player_list = [self.player_one, self.player_two]
         first_players_turn = True
         while not game_over:
+            self.scoreboard.display()
             if first_players_turn:
-                print("p1")
+                print("Player 1")
                 game_over = self.player_one.take_turn()
             else:
-                print("p2")
+                print("Player 2")
                 game_over = self.player_two.take_turn()
             first_players_turn = not first_players_turn
         print(f"p1:{self.player_one.score}")
@@ -45,9 +46,11 @@ class Scoreboard:
         self.player_one = player_one
         self.player_two = player_two
         self.best_of = best_of
-
-    def check_win(self):
-        pass
+    
+    def display(self):
+        print(f"""
+            Player 1: {self.player_one.score}       Player 2: {self.player_two.score}
+        """)
 
 
 class Player:
