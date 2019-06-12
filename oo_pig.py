@@ -1,10 +1,12 @@
+SCORE_TO_WIN = 100
+
 class PlayGame:
     """Plays the dice game Pig with two players"""
     def __init__(self):
-        self.player_one = Player(turn=True)
+        self.player_one = Player()
         self.player_two = self.get_opponent()
         self.scoreboard = Scoreboard(self.player_one, self.player_two)
-        self.start_game()
+        self.play_game()
     
     def get_opponent(self):
         number_of_players = None
@@ -20,8 +22,22 @@ class PlayGame:
             except:
                 print("Invalid entry, try again.")
     
-    def start_game(self):
-        print("Game Started")
+    def play_game(self):
+        game_over = False
+        player_list = [self.player_one, self.player_two]
+        first_players_turn = True
+        while not game_over:
+            if first_players_turn:
+                print("p1")
+                game_over = self.player_one.take_turn()
+            else:
+                print("p2")
+                game_over = self.player_two.take_turn()
+            first_players_turn = not first_players_turn
+        print(f"p1:{self.player_one.score}")
+        print(f"p2:{self.player_two.score}")
+            
+        
 
 class Scoreboard:
     """Tracks scores for the current turn, game, and multiple games"""
@@ -30,10 +46,20 @@ class Scoreboard:
         self.player_two = player_two
         self.best_of = best_of
 
+    def check_win(self):
+        pass
+
+
 class Player:
     """Makes a player class"""
-    def __init__(self, turn=False):
+    def __init__(self):
         self.score = 0
-        self.turn = turn
+        self.winner = False
+
+    def take_turn(self):
+        self.score += int(input("Put in a score: "))
+        if self.score >= SCORE_TO_WIN:
+            self.winner = True
+        return self.winner
 
 PlayGame()
