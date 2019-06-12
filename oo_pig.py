@@ -39,13 +39,21 @@ class PlayGame:
                 print(self.player_two.name)
                 game_over = self.player_two.take_turn()
             first_players_turn = not first_players_turn
+        self.play_again_query()
+
+    def play_again_query(self):
+        response = input("Do you want to play again? ")
+        try:
+            if response[0].lower() == "y":
+                self.play_game()
+        except:
+            pass
             
 class Scoreboard:
     """Tracks scores for the current turn, game, and multiple games"""
-    def __init__(self, player_one, player_two, best_of=1):
+    def __init__(self, player_one, player_two):
         self.player_one = player_one
         self.player_two = player_two
-        self.best_of = best_of
         self.turn_score = 0
     
     def display(self):
@@ -53,18 +61,31 @@ class Scoreboard:
         print(f"""
             {self.player_one.name}: {self.player_one.score}       {self.player_two.name}: {self.player_two.score}
         
+            {self.win_percentage()}
+
             Turn Score: {self.turn_score}
         """)
+
+    def win_percentage(self):
+        if self.player_one.wins > self.player_two.wins:
+            winning_player = self.player_one.name
+            winning_player_percent = round(self.player_one.wins/(self.player_one.wins+self.player_two.wins),1)
+        elif self.player_one.wins < self.player_two.wins:
+            winning_player = self.player_two.name
+            winning_player_percent = round(self.player_two.wins/(self.player_one.wins+self.player_two.wins),1)
+        else:
+            return "Series is tied"
+        return f"{winning_player} win %: {100*winning_player_percent}"
 
 
 class Player:
     """Makes a player class"""
     def __init__(self, game):
         self.score = 0
-        self.winner = False
         self.name = "default"
         self.game = game
         valid_input = False
+        self.wins = 0
         while not valid_input:
             self.name = input("New player, what's your name? ")
             if len(self.name) < 10:
@@ -98,17 +119,18 @@ class Player:
 
         if self.score >= SCORE_TO_WIN:
             print(f"{self.name} wins!")
-            self.winner = True
-        return self.winner
+            self.wins += 1
+            return True
+        return False
 
 class ComputerPlayer:
     """makes a computer player with different selectable personalities"""
     def __init__(self, game, personality="scared"):
         self.game = game
-        self.name = "Scared"
-        self.personality = personality
+        self.personality = Personality()
+        self.name = self.personality.name
         self.score = 0
-        self.winner = False
+        self.wins = 0
 
     def take_turn(self):
         the_die = Die()
@@ -136,8 +158,9 @@ class ComputerPlayer:
 
         if self.score >= SCORE_TO_WIN:
             print(f"{self.name} wins!")
-            self.winner = True
-        return self.winner
+            self.wins += 1
+            return True
+        return False
 
     def get_move(self):
         if self.game.scoreboard.turn_score + self.score >= SCORE_TO_WIN:
@@ -150,7 +173,19 @@ class ComputerPlayer:
         input("Press Enter to continue.")
         return move
 
+class Personality:
+    """a personality class designed to make moves in Pig"""
+    def __init__(self, name=None):
+        potential_names = ["Scared","Chaser","Smart"]
+        if name in potential_names:
+            self.name = name
+        else:
+            index = random.randint(0,(len(potential_names)-1))
+            self.name = potential_names[index]
 
+    # def get_move(my_score, opp_score, curr_score):
+        
+    
 
 class Die:
     """makes 1 die and can roll it"""
@@ -160,4 +195,6 @@ class Die:
     def roll(self):
         return random.randint(1, self.sides)
 
-PlayGame()
+game = PlayGame()
+while True:
+    game.play_game()
