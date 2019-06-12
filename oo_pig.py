@@ -108,9 +108,47 @@ class ComputerPlayer:
         self.name = "Scared"
         self.personality = personality
         self.score = 0
+        self.winner = False
 
     def take_turn(self):
-        print("made a computer player")
+        the_die = Die()
+        turn_over = False
+        self.game.scoreboard.turn_score = 0
+        while not turn_over:
+            roll = the_die.roll()
+            if roll == 1:
+                self.game.scoreboard.turn_score = 0
+                self.game.scoreboard.display()
+                print(f"{self.name} BUSTED!")
+                input("Press Enter to Continue")
+                turn_over = True
+            else:
+                self.game.scoreboard.turn_score += roll
+                self.game.scoreboard.display()
+                print(f"{self.name} rolled a {roll}")
+                choice = self.get_move()
+                try:
+                    if choice[0].lower() == "h":
+                        self.score += self.game.scoreboard.turn_score
+                        turn_over = True
+                except:
+                    pass
+
+        if self.score >= SCORE_TO_WIN:
+            print(f"{self.name} wins!")
+            self.winner = True
+        return self.winner
+
+    def get_move(self):
+        if self.game.scoreboard.turn_score + self.score >= SCORE_TO_WIN:
+            move = "hold"
+        elif self.game.scoreboard.turn_score < 15:
+            move = "roll"
+        else:
+            move = "hold"
+        print(f"They're going to {move}.")
+        input("Press Enter to continue.")
+        return move
 
 
 
