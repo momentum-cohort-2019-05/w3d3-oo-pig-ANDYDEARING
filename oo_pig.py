@@ -112,22 +112,30 @@ class Player:
                 print("Only names up to 10 characters are supported")
 
     def take_turn(self):
-        """method for human player taking a turn"""
+        """method for human player taking a turn, reurns True if the
+        player won on their turn, False if not"""
         the_die = Die()
         turn_over = False
+        # initialize the current score in scoreboard for a new turn
         self.game.scoreboard.turn_score = 0
+
         while not turn_over:
             roll = the_die.roll()
             if roll == 1:
+                # update the scoreboard and display again so that current score
+                # is 0 on a bust
                 self.game.scoreboard.turn_score = 0
                 self.game.scoreboard.display()
                 print(f"{self.name}, you BUSTED!")
                 input("Press Enter to Continue")
                 turn_over = True
             else:
+                # roll, update, and then refresh
                 self.game.scoreboard.turn_score += roll
                 self.game.scoreboard.display()
                 print(f"{self.name}, you rolled a {roll}")
+                # any input, including enter, will roll besides something
+                # that starts with an "h" or "H"
                 choice = input("What do you want to do? (Roll/Hold) ")
                 try:
                     if choice[0].lower() == "h":
@@ -135,7 +143,8 @@ class Player:
                         turn_over = True
                 except:
                     pass
-
+        # the player says that they won if they did
+        # AREA FOR IMPROVEMENT: this should be a method in game or player
         if self.score >= SCORE_TO_WIN:
             print(f"{self.name} wins!")
             self.wins += 1
@@ -143,9 +152,11 @@ class Player:
         return False
 
 class ComputerPlayer:
-    """makes a computer player with different selectable personalities"""
+    """makes a computer player with random personalities, mimics most
+    of the Player class"""
     def __init__(self, game, personality="scared"):
         self.game = game
+        # personality object helps with move strategy
         self.personality = Personality()
         self.name = self.personality.name
         self.score = 0
@@ -161,36 +172,31 @@ class ComputerPlayer:
                 self.game.scoreboard.turn_score = 0
                 self.game.scoreboard.display()
                 print(f"{self.name} BUSTED!")
+                # this stalls the computer player until the player knows what happened
                 input("Press Enter to Continue")
                 turn_over = True
             else:
                 self.game.scoreboard.turn_score += roll
                 self.game.scoreboard.display()
                 print(f"{self.name} rolled a {roll}")
+                # to make the move, the computer player needs to know both total scores and the
+                # current score
+                # AREA FOR IMPROVEMENT: this is a mess and feels like it could be shortened
                 choice = self.personality.get_move(self.score, self.game.player_one.score, self.game.scoreboard.turn_score)
+                # AREA FOR IMPROVEMENT: this is repeated code
                 try:
                     if choice[0].lower() == "h":
                         self.score += self.game.scoreboard.turn_score
                         turn_over = True
                 except:
                     pass
-
+        # AREA FOR IMPROVEMENT: this is repeated code, probably could be even better if
+        # ComputerPlayer inherited Player
         if self.score >= SCORE_TO_WIN:
             print(f"{self.name} wins!")
             self.wins += 1
             return True
         return False
-
-    def get_move(self):
-        if self.game.scoreboard.turn_score + self.score >= SCORE_TO_WIN:
-            move = "hold"
-        elif self.game.scoreboard.turn_score < 15:
-            move = "roll"
-        else:
-            move = "hold"
-        print(f"They're going to {move}.")
-        input("Press Enter to continue.")
-        return move
 
 class Personality:
     """a personality class designed to make moves in Pig"""
@@ -203,6 +209,8 @@ class Personality:
             self.name = potential_names[index]
 
     def get_move(self, my_score, opp_score, curr_score):
+        """this is a filter for selecting the correct personality method for get_move"""
+        # AREA FOR IMPROVEMENT: this would be more efficient as a dictionary of functions
         if self.name == "Scared":
             return self.get_scared_move(my_score, opp_score, curr_score)
         if self.name == "Chaser":
