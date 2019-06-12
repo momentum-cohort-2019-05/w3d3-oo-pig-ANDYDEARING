@@ -4,6 +4,7 @@ class PlayGame:
         self.player_one = Player(turn=True)
         self.player_two = self.get_opponent()
         self.scoreboard = Scoreboard(self.player_one, self.player_two)
+        self.start_game()
     
     def get_opponent(self):
         number_of_players = None
