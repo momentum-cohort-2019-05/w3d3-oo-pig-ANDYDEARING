@@ -12,16 +12,18 @@ class PlayGame:
         self.play_game()
     
     def get_opponent(self):
+        """populates the second player with either a human or computer player"""
         number_of_players = None
         while True:
-            number_of_players = input("How many players? ")
+            number_of_players = input("How many players? 1 or 2? ")
             try:
                 if int(number_of_players) == 2:
                     return Player(self)
                 elif int(number_of_players) == 1:
                     print("Computer opponent coming soon!")
+                    return ComputerPlayer(self)
                 else:
-                    print("Players more than 2 not supported yet.")
+                    print("Players more than 2 not supported.")
             except:
                 print("Invalid entry, try again.")
     
@@ -87,14 +89,29 @@ class Player:
                 self.game.scoreboard.display()
                 print(f"{self.name}, you rolled a {roll}")
                 choice = input("What do you want to do? (Roll/Hold) ")
-                if choice[0].lower() == "h":
-                    self.score += self.game.scoreboard.turn_score
-                    turn_over = True
+                try:
+                    if choice[0].lower() == "h":
+                        self.score += self.game.scoreboard.turn_score
+                        turn_over = True
+                except:
+                    pass
 
         if self.score >= SCORE_TO_WIN:
             print(f"{self.name} wins!")
             self.winner = True
         return self.winner
+
+class ComputerPlayer:
+    """makes a computer player with different selectable personalities"""
+    def __init__(self, game, personality="scared"):
+        self.game = game
+        self.name = "Scared"
+        self.personality = personality
+        self.score = 0
+
+    def take_turn(self):
+        print("made a computer player")
+
 
 
 class Die:
