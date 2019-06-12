@@ -1,4 +1,5 @@
 import random
+import os
 SCORE_TO_WIN = 100
 
 class PlayGame:
@@ -26,7 +27,6 @@ class PlayGame:
     
     def play_game(self):
         game_over = False
-        player_list = [self.player_one, self.player_two]
         first_players_turn = True
         while not game_over:
             self.scoreboard.display()
@@ -72,13 +72,29 @@ class Player:
     def take_turn(self):
         # self.score += int(input("Put in a score: "))
         the_die = Die()
-        roll = the_die.roll()
-        print(f"You rolled a {roll}")
-        self.score += roll
+        turn_over = False
+        turn_score = 0
+        while not turn_over:
+            roll = the_die.roll()
+            print(f"You rolled a {roll}")
+            if roll == 1:
+                print("BUSTED!")
+                turn_over = True
+                turn_score = 0
+            else:
+                turn_score += roll
+                print("Current turn score:", turn_score)
+                input_invalid = True
+                choice = input("What do you want to do? (Roll/Hold) ")
+                if choice[0].lower() == "h":
+                    self.score += turn_score
+                    turn_over = True
+
         if self.score >= SCORE_TO_WIN:
             print(f"{self.name} wins!")
             self.winner = True
         return self.winner
+
 
 class Die:
     """makes 1 die and can roll it"""
@@ -86,6 +102,6 @@ class Die:
         self.sides = sides
 
     def roll(self):
-        return random.randint(1, self.sides+1)
+        return random.randint(1, self.sides)
 
 PlayGame()
