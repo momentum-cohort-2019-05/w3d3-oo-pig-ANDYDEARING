@@ -9,7 +9,7 @@ class PlayGame:
         self.player_one = Player(self)
         self.player_two = self.get_opponent()
         self.scoreboard = Scoreboard(self.player_one, self.player_two)
-        self.play_game()
+        # self.play_game()
     
     def get_opponent(self):
         """populates the second player with either a human or computer player"""
@@ -20,7 +20,6 @@ class PlayGame:
                 if int(number_of_players) == 2:
                     return Player(self)
                 elif int(number_of_players) == 1:
-                    print("Computer opponent coming soon!")
                     return ComputerPlayer(self)
                 else:
                     print("Players more than 2 not supported.")
@@ -28,6 +27,8 @@ class PlayGame:
                 print("Invalid entry, try again.")
     
     def play_game(self):
+        self.player_one.score = 0
+        self.player_two.score = 0
         game_over = False
         first_players_turn = True
         while not game_over:
@@ -69,10 +70,10 @@ class Scoreboard:
     def win_percentage(self):
         if self.player_one.wins > self.player_two.wins:
             winning_player = self.player_one.name
-            winning_player_percent = round(self.player_one.wins/(self.player_one.wins+self.player_two.wins),1)
+            winning_player_percent = round(self.player_one.wins/(self.player_one.wins+self.player_two.wins),3)
         elif self.player_one.wins < self.player_two.wins:
             winning_player = self.player_two.name
-            winning_player_percent = round(self.player_two.wins/(self.player_one.wins+self.player_two.wins),1)
+            winning_player_percent = round(self.player_two.wins/(self.player_one.wins+self.player_two.wins),3)
         else:
             return "Series is tied"
         return f"{winning_player} win %: {100*winning_player_percent}"
@@ -148,7 +149,7 @@ class ComputerPlayer:
                 self.game.scoreboard.turn_score += roll
                 self.game.scoreboard.display()
                 print(f"{self.name} rolled a {roll}")
-                choice = self.get_move()
+                choice = self.personality.get_move(self.score, self.game.player_one.score, self.game.scoreboard.turn_score)
                 try:
                     if choice[0].lower() == "h":
                         self.score += self.game.scoreboard.turn_score
@@ -183,9 +184,51 @@ class Personality:
             index = random.randint(0,(len(potential_names)-1))
             self.name = potential_names[index]
 
-    # def get_move(my_score, opp_score, curr_score):
-        
+    def get_move(self, my_score, opp_score, curr_score):
+        if self.name == "Scared":
+            return self.get_scared_move(my_score, opp_score, curr_score)
+        if self.name == "Chaser":
+            return self.get_chaser_move(my_score, opp_score, curr_score)
+        if self.name == "Smart":
+            return self.get_smart_move(my_score, opp_score, curr_score)
     
+    def get_scared_move(self, my_score, opp_score, curr_score):
+        
+        if curr_score + my_score >= SCORE_TO_WIN:
+            move = "hold"
+        elif curr_score >= 15:
+            move = "hold"
+        else:
+            move = "roll"
+        print(f"{self.name} will {move}.")
+        input("Press Enter to Continue.")
+        return move
+
+    def get_chaser_move(self, my_score, opp_score, curr_score):
+        
+        if curr_score + my_score >= SCORE_TO_WIN:
+            move = "hold"
+        elif curr_score + my_score < opp_score:
+            move = "roll"
+        elif curr_score >= 25:
+            move = "hold"
+        else:
+            move = "roll"
+        print(f"{self.name} will {move}.")
+        input("Press Enter to Continue.")
+        return move
+
+    def get_smart_move(self, my_score, opp_score, curr_score):
+        
+        if curr_score + my_score >= SCORE_TO_WIN:
+            move = "hold"
+        elif curr_score >= 20:
+            move = "hold"
+        else:
+            move = "roll"
+        print(f"{self.name} will {move}.")
+        input("Press Enter to Continue.")
+        return move
 
 class Die:
     """makes 1 die and can roll it"""
@@ -196,5 +239,4 @@ class Die:
         return random.randint(1, self.sides)
 
 game = PlayGame()
-while True:
-    game.play_game()
+game.play_game()
