@@ -154,7 +154,7 @@ class Player:
 class ComputerPlayer:
     """makes a computer player with random personalities, mimics most
     of the Player class"""
-    def __init__(self, game, personality="scared"):
+    def __init__(self, game):
         self.game = game
         # personality object helps with move strategy
         self.personality = Personality()
@@ -200,15 +200,22 @@ class ComputerPlayer:
 
 class Personality:
     """a personality class designed to make moves in Pig"""
-    def __init__(self, name=None):
-        potential_names = ["Scared","Chaser","Smart"]
-        # allows caller to specify which personality they want
-        if name in potential_names:
-            self.name = name
+    def __init__(self):
+        self.potential_names = ["Scared","Chaser","Smart"]
+        self.name = self.get_name()
+
+    def get_name(self):
+        """lets the user choose their opponent, random otherwise"""
+        print(self.potential_names)
+        name = input("Who do you want to play? (Random by default) ")
+        if name.capitalize() in self.potential_names:
+            return name.capitalize()
         else:
         # otherwise random
-            index = random.randint(0,(len(potential_names)-1))
-            self.name = potential_names[index]
+            index = random.randint(0,(len(self.potential_names)-1))
+            return self.potential_names[index]
+        
+
 
     def get_move(self, my_score, opp_score, curr_score):
         """this is a filter for selecting the correct personality method for get_move"""
@@ -248,18 +255,27 @@ class Personality:
         return move
 
     def get_smart_move(self, my_score, opp_score, curr_score):
-        """will hold over 20 or if they win"""
+        """this is a crude approximation of the optimal play solution"""
+        # AREA FOR IMPROVEMENT: finding a way to map optimal 3d graph
+        # for an "Evil" computer player. If I had more time, I would
+        # import and use the VRML of the optimal solution
         if curr_score + my_score >= SCORE_TO_WIN:
             move = "hold"
-        elif curr_score >= 20:
-            move = "hold"
+        elif my_score < 22:
+            if curr_score >= 22:
+                move = "hold"
+            else:
+                move = "roll"
+        elif my_score < 75:
+            if curr_score >= 20:
+                move = "hold"
+            else:
+                move = "roll"
         else:
             move = "roll"
         print(f"{self.name} will {move}.")
         input("Press Enter to Continue.")
         return move
-    # AREA FOR IMPROVEMENT: finding a way to map optimal 3d graph
-    # for an "Evil" computer player
 
 class Die:
     """makes 1 die and can roll it"""
