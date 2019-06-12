@@ -14,6 +14,7 @@ class PlayGame:
             number_of_players = input("How many players? ")
             try:
                 if int(number_of_players) == 2:
+                    print("Player 2")
                     return Player()
                 elif int(number_of_players) == 1:
                     print("Computer opponent coming soon!")
@@ -49,7 +50,7 @@ class Scoreboard:
     
     def display(self):
         print(f"""
-            Player 1: {self.player_one.score}       Player 2: {self.player_two.score}
+            {self.player_one.name}: {self.player_one.score}       {self.player_two.name}: {self.player_two.score}
         """)
 
 
@@ -58,10 +59,12 @@ class Player:
     def __init__(self):
         self.score = 0
         self.winner = False
+        self.name = input("What's your name? ")
 
     def take_turn(self):
         self.score += int(input("Put in a score: "))
         if self.score >= SCORE_TO_WIN:
+            print(f"{self.name} wins!")
             self.winner = True
         return self.winner
 
