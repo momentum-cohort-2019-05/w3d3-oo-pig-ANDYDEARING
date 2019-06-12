@@ -59,7 +59,14 @@ class Player:
     def __init__(self):
         self.score = 0
         self.winner = False
-        self.name = input("What's your name? ")
+        self.name = "default"
+        valid_input = False
+        while not valid_input:
+            self.name = input("What's your name? ")
+            if len(self.name) < 10:
+                valid_input = True
+            else:
+                print("Only names up to 10 characters are supported")
 
     def take_turn(self):
         self.score += int(input("Put in a score: "))
