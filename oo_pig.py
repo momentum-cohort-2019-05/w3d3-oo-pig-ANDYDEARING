@@ -31,10 +31,10 @@ class PlayGame:
         while not game_over:
             self.scoreboard.display()
             if first_players_turn:
-                print("Player 1")
+                print(self.player_one.name)
                 game_over = self.player_one.take_turn()
             else:
-                print("Player 2")
+                print(self.player_two.name)
                 game_over = self.player_two.take_turn()
             first_players_turn = not first_players_turn
         print(f"p1:{self.player_one.score}")
