@@ -202,9 +202,11 @@ class Personality:
     """a personality class designed to make moves in Pig"""
     def __init__(self, name=None):
         potential_names = ["Scared","Chaser","Smart"]
+        # allows caller to specify which personality they want
         if name in potential_names:
             self.name = name
         else:
+        # otherwise random
             index = random.randint(0,(len(potential_names)-1))
             self.name = potential_names[index]
 
@@ -219,7 +221,7 @@ class Personality:
             return self.get_smart_move(my_score, opp_score, curr_score)
     
     def get_scared_move(self, my_score, opp_score, curr_score):
-        
+        """will hold over 15 or if they win"""
         if curr_score + my_score >= SCORE_TO_WIN:
             move = "hold"
         elif curr_score >= 15:
@@ -231,7 +233,8 @@ class Personality:
         return move
 
     def get_chaser_move(self, my_score, opp_score, curr_score):
-        
+        """will hold over 25 if ahead or of they win, otherwise roll until
+        they have the lead"""
         if curr_score + my_score >= SCORE_TO_WIN:
             move = "hold"
         elif curr_score + my_score < opp_score:
@@ -245,7 +248,7 @@ class Personality:
         return move
 
     def get_smart_move(self, my_score, opp_score, curr_score):
-        
+        """will hold over 20 or if they win"""
         if curr_score + my_score >= SCORE_TO_WIN:
             move = "hold"
         elif curr_score >= 20:
@@ -255,6 +258,8 @@ class Personality:
         print(f"{self.name} will {move}.")
         input("Press Enter to Continue.")
         return move
+    # AREA FOR IMPROVEMENT: finding a way to map optimal 3d graph
+    # for an "Evil" computer player
 
 class Die:
     """makes 1 die and can roll it"""
@@ -264,5 +269,6 @@ class Die:
     def roll(self):
         return random.randint(1, self.sides)
 
+# done this way to retain info between games
 game = PlayGame()
 game.play_game()
