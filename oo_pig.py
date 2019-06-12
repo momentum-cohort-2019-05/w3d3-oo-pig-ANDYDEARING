@@ -3,7 +3,7 @@ class PlayGame:
     def __init__(self):
         self.player_one = Player(turn=True)
         self.player_two = self.get_opponent()
-        self.scoreboard = Scoreboard(player_one, player_two)
+        self.scoreboard = Scoreboard(self.player_one, self.player_two)
     
     def get_opponent(self):
         number_of_players = None
@@ -18,11 +18,16 @@ class PlayGame:
                     print("Players more than 2 not supported yet.")
             except:
                 print("Invalid entry, try again.")
+    
+    def start_game(self):
+        print("Game Started")
 
 class Scoreboard:
     """Tracks scores for the current turn, game, and multiple games"""
-    def __init__(self, PlayerOne, PlayerTwo, best_of=1):
-        pass
+    def __init__(self, player_one, player_two, best_of=1):
+        self.player_one = player_one
+        self.player_two = player_two
+        self.best_of = best_of
 
 class Player:
     """Makes a player class"""
