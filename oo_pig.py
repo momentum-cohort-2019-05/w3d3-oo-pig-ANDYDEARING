@@ -5,11 +5,16 @@ SCORE_TO_WIN = 100
 class PlayGame:
     """Plays the dice game Pig with two players"""
     def __init__(self):
+        # clear to start the game
         os.system("clear")
+        # player one is always the user
         self.player_one = Player(self)
+        # player two could be human or not
         self.player_two = self.get_opponent()
+        # initialize the scoreboard with two players
         self.scoreboard = Scoreboard(self.player_one, self.player_two)
-        # self.play_game()
+        # start with player one in the first game
+        self.player_ones_turn = True
     
     def get_opponent(self):
         """populates the second player with either a human or computer player"""
@@ -27,24 +32,30 @@ class PlayGame:
                 print("Invalid entry, try again.")
     
     def play_game(self):
+        # reset the scores at the start of the game
+        # AREA FOR IMPROVEMENT would probably be better as a method of player
         self.player_one.score = 0
         self.player_two.score = 0
+
+        # play the game while it's not over
         game_over = False
-        first_players_turn = True
         while not game_over:
             self.scoreboard.display()
-            if first_players_turn:
+            if self.player_ones_turn:
                 print(self.player_one.name)
                 game_over = self.player_one.take_turn()
             else:
                 print(self.player_two.name)
                 game_over = self.player_two.take_turn()
-            first_players_turn = not first_players_turn
+            # this logic should make the loser go first next game
+            # also this "toggles" whose turn it is
+            self.player_ones_turn = not self.player_ones_turn
         self.play_again_query()
 
     def play_again_query(self):
         response = input("Do you want to play again? ")
         try:
+            # play the game again, retaining the player, game, and scoreboard objects
             if response[0].lower() == "y":
                 self.play_game()
         except:
@@ -68,13 +79,17 @@ class Scoreboard:
         """)
 
     def win_percentage(self):
+        # if player one is winning the series
         if self.player_one.wins > self.player_two.wins:
             winning_player = self.player_one.name
+            # round the win percentage to 3 decimal places and multiply by 100
             winning_player_percent = round(self.player_one.wins/(self.player_one.wins+self.player_two.wins),3)
+        # same for player two
         elif self.player_one.wins < self.player_two.wins:
             winning_player = self.player_two.name
             winning_player_percent = round(self.player_two.wins/(self.player_one.wins+self.player_two.wins),3)
         else:
+        # change format if the series is tied
             return "Series is tied"
         return f"{winning_player} win %: {100*winning_player_percent}"
 
@@ -83,18 +98,21 @@ class Player:
     """Makes a player class"""
     def __init__(self, game):
         self.score = 0
-        self.name = "default"
+        self.name = self.get_name()
         self.game = game
-        valid_input = False
         self.wins = 0
-        while not valid_input:
-            self.name = input("New player, what's your name? ")
-            if len(self.name) < 10:
-                valid_input = True
+
+    def get_name(self):
+        """gets a name for the player"""
+        while True:
+            name = input("New player, what's your name? ")
+            if len(name) < 10:
+                return name
             else:
                 print("Only names up to 10 characters are supported")
 
     def take_turn(self):
+        """method for human player taking a turn"""
         the_die = Die()
         turn_over = False
         self.game.scoreboard.turn_score = 0
